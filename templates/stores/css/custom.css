@@ -1,0 +1,77 @@
+{% verbatim %}
+/* Custom classes */
+/*body {*/
+    /*font-family: 'Roboto', sans-serif;*/
+/*}*/
+
+
+.store-product-card {
+    margin-bottom: 1rem;
+}
+
+.store-product-card:last-of-type {
+    margin-bottom: 0;
+}
+
+.course-header {
+    background-color: #0056b3;
+    color: #ffffff;
+    height: 50px;
+}
+
+.course-header-hamburger {
+    color: #ffffff;
+}
+
+.course-header-brand {
+    text-align: center;
+    font-size: 1.5rem;
+    padding-top: 7px;
+    padding-bottom: 7px;
+}
+
+.course-header-toolbar {
+    float: right;
+    height: 32px;
+    margin-top: 9px;
+    margin-bottom: 9px;
+    padding: 8px;
+    font-size: 16px;
+    line-height: 16px;
+}
+
+.course-sidebar {
+    background-color: #eeeeee;
+    color: #36434d;
+    border-right: 1px solid #dddddd;
+}
+
+.course-sidebar-contents {
+    margin-left: 1.5rem;
+    margin-right: 1.5rem;
+}
+
+.course-sidebar-section {
+    margin-bottom: 1.5rem;
+}
+
+.course-sidebar-section-header {
+    color: #0056b3;
+    font-weight: 600;
+}
+
+.course-text-wrapper {
+    line-height: 2em !important;
+}
+
+.unstyled-link {
+  color: inherit;
+  text-decoration: inherit;
+}
+
+#store-buy-wizard-iframe {
+    height: 100%;
+    width: 100%;
+}
+
+{% endverbatim %}

@@ -1,0 +1,18 @@
+{% extends "stores/base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+    <div class="row mt-5">
+        <div class="col-sm text-center">
+            <h2>Create an account</h2>
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-sm-6 offset-sm-3">
+            {% crispy form %}
+        </div>
+    </div>
+{% endblock %}

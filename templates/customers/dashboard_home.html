@@ -1,0 +1,47 @@
+{% extends "customers/base.html" %}
+
+{% block content %}
+    <div class="row mt-5">
+        <div class="col-sm-8 offset-sm-2">
+            <h3>Your Products</h3>
+
+            <div class="store-products-container mt-5">
+                {%  for product in your_products %}
+                    <div class="card store-product-card">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ product.name }}</h5>
+
+                            <p>Brief description: {{ product.brief_description }}</p>
+
+                            {% if product.product_type == 'course' %}
+                                <a href="{% url 'course_home' product.slug %}" class="btn btn-primary">Resume</a>
+                            {% else %}
+                                <a href="{% url 'store_product' product.slug %}" class="btn btn-primary">Check it out</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-sm-8 offset-sm-2">
+            <h3>Other products from {{ store.display_name }}</h3>
+
+            <div class="store-products-container mt-5">
+                {% for product in other_products %}
+                    <div class="card store-product-card">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ product.name }}</h5>
+
+                            <p>Brief description: {{ product.brief_description }}</p>
+
+                            <a href="{% url 'store_product' product.slug %}" class="btn btn-primary">Check it out</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends "courses/content_item_base.html" %}
+
+{% block item_content %}
+    <div class="row mt-5">
+        <div class="col text-center">
+            <div class="course-text-wrapper">
+                <p>{{ content_item.content }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col text-center">
+            <a href="{{ content_item.url }}" alt="{{ content_item.title }}" target="_blank">{{ content_item.url }}</a>
+        </div>
+    </div>
+{% endblock item_content %}

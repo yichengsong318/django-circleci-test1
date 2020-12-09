@@ -1,0 +1,46 @@
+{% extends "stores/base_buy_wizard.html" %}
+
+{% block content %}
+    {{ form.errors }}
+    <div class="row">
+        <div class="col">
+
+            {% if customer.user %}
+
+                <h4>You've got access!</h4>
+
+                <a href="{{ product.dashboard_link }}" target="_parent" class="btn btn-primary btn-block">Let me see</a>
+
+            {% else %}
+
+                <p>Just one more thing.</p>
+
+                <form id="set-password-form" method="post"
+                      action="{% url "store_get_access_success" product.slug customer.uuid %}">
+                    {% csrf_token %}
+
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input id="input-password" name="new_password"
+                               type="password"
+                               class="form-control">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Confirm password</label>
+                        <input id="input-confirm_password"
+                               name="confirm_password" type="password"
+                               class="form-control">
+                    </div>
+
+                    <button id="set-password-button" type="submit"
+                            class="btn btn-primary btn-block btn-lg">
+                        Set my password
+                    </button>
+
+                </form>
+
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

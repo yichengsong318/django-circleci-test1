@@ -1,0 +1,249 @@
+{% extends "stores/base_buy_wizard.html" %}
+
+{% load countries %}
+
+{% block scripts %}
+    <script src="https://js.stripe.com/v3/"></script>
+{% endblock %}
+
+{% block content %}
+
+    <div class="row mt-5">
+        <div class="col text-center">
+            <h1>Buy {{ product.name }}</h1>
+        </div>
+    </div>
+
+    <div class="row mt-5 mb-5">
+
+        <div class="col-sm-6 offset-sm-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col" id="payment-errors"></div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col">
+                            <form id="payment-form">
+
+
+                                <div class="form-group">
+                                    <a href="#" id="discount-code-link">I have a discount code.</a>
+
+                                    <div id="discount-code-form" style="display:none;">
+                                        <label>Discount code</label>
+                                        <input id="discount-code" type="text"
+                                               class="form-control">
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group col-sm-6">
+                                        <label>First name</label>
+                                        <input id="input-first-name" type="text"
+                                               class="form-control">
+                                    </div>
+
+                                    <div class="form-group col-sm-6">
+                                        <label>Last name</label>
+                                        <input id="input-last-name" type="text"
+                                               class="form-control">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Email</label>
+                                    <input id="input-email" type="email"
+                                           class="form-control">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Address</label>
+                                    <input id="input-address" type="text"
+                                           class="form-control">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>City</label>
+                                    <input id="input-city" type="text"
+                                           class="form-control">
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group col-sm-8">
+                                        <label>State</label>
+                                        <input id="input-state" type="text"
+                                               class="form-control">
+                                    </div>
+
+                                    <div class="form-group col-sm-4">
+                                        <label>ZIP</label>
+                                        <input id="input-zip" type="text"
+                                               class="form-control">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Country</label>
+
+                                    <select class="custom-select" id="input-country">
+                                        {% get_countries as countries %}
+                                            <option selected>Select a country</option>
+                                        {% for country in countries %}
+                                            <option value="{{ country.code }}">{{ country.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Card</label>
+                                    <div id="card-element">
+                                        <!-- Elements will create input elements here -->
+                                    </div>
+                                </div>
+
+
+                                <button id="pay-button" type="submit"
+                                        class="btn btn-primary btn-block btn-lg">
+                                    Pay <span id="product-price">{{ formatted_price }}</span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        const stripe = Stripe(
+            '{{ STRIPE_PUBLISHABLE_KEY }}', {
+                stripeAccount: '{{ connected_account_id }}'
+            }
+        );
+
+        const elements = stripe.elements();
+
+        let stripeSettings = {
+            paymentIntentClientSecret: null,
+            paymentAmount: {{ product.price }},
+            formattedPrice: "{{ formatted_price }}",
+            style: {
+                base: {
+                    color: "#32325d",
+                }
+            }
+        };
+
+        const card = elements.create("card", {
+            style: stripeSettings.style,
+            hidePostalCode: true
+        });
+        card.mount("#card-element");
+
+        function getBillingDetails() {
+            return {
+                name: document.getElementById('input-first-name').value + ' ' + document.getElementById('input-last-name').value,
+                email: document.getElementById('input-email').value,
+                address: {
+                    line1: document.getElementById('input-address').value,
+                    city: document.getElementById('input-city').value,
+                    state: document.getElementById('input-state').value,
+                    postal_code: document.getElementById('input-zip').value,
+                    country: document.getElementById('input-country').value
+                }
+            };
+        }
+
+        function getDiscountCode() {
+            return document.getElementById('discount-code').value;
+        }
+
+        function redirectToSuccess() {
+            const redirectUrl = "{{ buy_success_redirect_url }}";
+            const customerEmail = document.getElementById('input-email').value;
+
+            window.location.href = `${redirectUrl}?customer_email=${customerEmail}`;
+        }
+
+        function buildPaymentError(message) {
+            return "<div class=\"alert alert-danger\" role=\"alert\">"
+                + message + "</div>";
+        }
+
+        function confirmPayment() {
+            $("#pay-button").prop("disabled", true);
+
+            stripe.confirmCardPayment(stripeSettings.paymentIntentClientSecret, {
+                payment_method: {
+                    card: card,
+                    billing_details: getBillingDetails()
+                }
+            }).then(function (result) {
+                if (result.error) {
+                    $("#payment-errors").html(buildPaymentError(result.error.message));
+                    $("#pay-button").prop("disabled", false);
+
+                } else {
+                    if (result.paymentIntent.status === 'succeeded') {
+                        redirectToSuccess();
+                    }
+                }
+            });
+        }
+
+        function getPaymentIntent(successCallback) {
+            console.log("getPaymentIntent")
+            $("#pay-button").prop("disabled", true);
+
+            $.ajax("{{ get_payment_intent_url }}", {
+                dataType: 'json',
+                type: 'POST',
+                data: {discount_code: getDiscountCode()},
+                success: function (data) {
+                    stripeSettings.paymentIntentClientSecret = data.payment_intent_client_secret;
+                    stripeSettings.amount = data.amount;
+                    stripeSettings.formattedPrice = data.formatted_price;
+
+                    console.log(stripeSettings.amount);
+
+                    $("#pay-button").prop("disabled", false);
+                    $("#payment-errors").empty();
+                    $("#product-price").text(stripeSettings.formattedPrice);
+
+                    console.log(successCallback);
+                    if (successCallback !== undefined) {
+                        successCallback();
+                    }
+                },
+                error: function (xhr) {
+                    let error = JSON.parse(xhr.responseText);
+                    $("#payment-errors").html(buildPaymentError(error.message));
+                }
+            });
+        }
+
+        function submitForm(event) {
+            event.preventDefault();
+
+            if (stripeSettings.paymentIntentClientSecret === null) {
+                getPaymentIntent(confirmPayment);
+            } else {
+                confirmPayment();
+            }
+        }
+
+        $(document).ready(function() {
+            $("#discount-code-link").click(function() {
+                $("#discount-code-form").show();
+                $("#discount-code-link").hide();
+            });
+
+            $("#discount-code").blur(function() {
+                getPaymentIntent();
+            });
+            $("#payment-form").submit(submitForm);
+        });
+    </script>
+{% endblock %}

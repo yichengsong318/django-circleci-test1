@@ -1,0 +1,30 @@
+{% extends "courses/base.html" %}
+
+{% block title %}
+    {{ store.display_name }} - {{ course.name }}
+{% endblock title %}
+
+{% block content %}
+    <div class="row mt-5">
+        <div class="col text-center">
+            <h1>{{ content_item.title }}</h1>
+        </div>
+    </div>
+
+    {% block item_content %}{% endblock item_content %}
+
+    <div class="row mt-5">
+        <div class="col-8 offset-2">
+            {% if content_item.prev_in_course %}
+                <a href="{% url 'course_content_item' course.slug content_item.prev_in_course.uuid %}"
+                   class="btn btn-outline-primary">Previous</a>
+            {% endif %}
+
+            {% if content_item.next_in_course %}
+                <a href="{% url 'course_content_item' course.slug content_item.next_in_course.uuid %}"
+                   class="btn btn-outline-primary float-right">Next</a>
+            {% endif %}
+        </div>
+    </div>
+
+{% endblock content %}

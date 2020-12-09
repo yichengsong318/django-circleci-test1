@@ -1,0 +1,29 @@
+{% extends "stores/base_buy_wizard.html" %}
+
+{% block content %}
+    <div class="row">
+        <div class="col">
+            <h3>Thanks!</h3>
+
+            <p>We have emailed your receipt to {{ customer_email }}.</p>
+
+            {% if request.user.is_anonymous %}
+                <p>Register an account with that email address to access your purchase.</p>
+            {% else %}
+                <p>You can access your purchase from your dashboard.</p>
+            {% endif %}
+
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-sm-8 offset-sm-2">
+            {% if request.user.is_anonymous %}
+                <a href="{% url 'store_register' %}" class="btn btn-primary">Register</a>
+            {% else %}
+                <a href="{% url 'customer_dashboard_home' %}" class="btn btn-primary">Dashboard</a>
+            {% endif %}
+        </div>
+    </div>
+
+{% endblock %}
