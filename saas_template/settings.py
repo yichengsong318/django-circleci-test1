@@ -105,7 +105,7 @@ DATABASES = {
         'NAME': 'saastemplate',
         'USER': 'saastemplate',
         'PASSWORD': 'saastemplate',
-        'HOST': os.getenv('PGHOST', 'localhost'),
+        'HOST': os.getenv('PGHOST', 'postgresql'),
         'PORT': os.getenv('PGPORT', '5432'),
     }
 }
@@ -181,7 +181,7 @@ JWPLAYER_PLAYER_ID = "VRgZnDrY"
 
 
 # Channels
-REDIS_URL = os.getenv('REDIS_URL', 'redis://localhost:6379')
+REDIS_URL = os.getenv('REDIS_URL', 'redis://redis:6379')
 
 CHANNEL_LAYERS = {
     'default': {
