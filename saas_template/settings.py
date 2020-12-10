@@ -105,8 +105,8 @@ DATABASES = {
         'NAME': 'saastemplate',
         'USER': 'saastemplate',
         'PASSWORD': 'saastemplate',
-        'HOST': os.getenv('PGHOST', 'postgresql'),
-        'PORT': os.getenv('PGPORT', '5432'),
+        'HOST': os.getenv('DB_HOST', 'postgresql'),
+        'PORT': os.getenv('DB_PORT', '5432'),
     }
 }
 
